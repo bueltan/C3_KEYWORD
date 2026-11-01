@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-10-31 — referencia de guarda CORE
+
+- Actualizar referencia de guarda posterior de CORE a 150 ms. Sin cambios
+  de firmware/modelo KEYWORD; el cambio de bloqueo PCM pertenece a CORE.
+
 ## 2026-10-31 — PIUU v1 y standby por voz
 
 - Reemplazar Wall-E v12 por PIUU proyecto 1153075 deploy v1 con sus seis clases;

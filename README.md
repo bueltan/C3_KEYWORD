@@ -38,7 +38,7 @@ Una respuesta pendiente puede terminar y deja el micrófono en standby.
 La retención sigue limitada por el timeout de CORE (15 minutos por defecto).
 
 Se mantiene la protección contra eco: no hay detección durante reproducción
-ni durante la guarda posterior de 250 ms. No se agregaron retardos, prioridad
+ni durante la guarda posterior de 150 ms. No se agregaron retardos, prioridad
 entre etiquetas ni bloqueo de reactivación: cada ventana acepta únicamente la
 clase ganadora que alcance su umbral. Una ventana no emite ambas órdenes,
 pero ventanas diferentes pueden emitir WAKE y luego STANDBY; comprobarlo en placa.
