@@ -11,6 +11,9 @@ struct EventMappingResult
     float threshold;
 };
 
+// Prints the configured per-keyword thresholds at boot.
+void eventMapperPrintConfig();
+
 // Converts a model label + confidence into a stable system event.
 // Model labels stay private to this layer; EARS only sees AudioEvent IDs.
 EventMappingResult eventMapperMap(const KeywordResult &result);

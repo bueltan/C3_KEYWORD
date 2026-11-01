@@ -79,8 +79,9 @@ def update(args):
             raise ValueError(f'Export vacío: {folder}')
     variables = (source/'model-parameters/model_variables.h').read_text()
     labels = re.search(r'ei_classifier_inferencing_categories(?:_\d+_\d+)?\[.*?\]\s*=\s*\{(.*?)\}', variables, re.S)
-    if not labels or re.findall(r'"([^"]+)"',labels[1]) != ['noise','unknown','walle']:
-        raise ValueError('Etiquetas distintas de noise/unknown/walle; revisar firmware')
+    expected_labels = baseline.get('labels', ['noise', 'unknown', 'walle'])
+    if not labels or re.findall(r'"([^"]+)"',labels[1]) != expected_labels:
+        raise ValueError(f'Etiquetas distintas de {expected_labels}; revisar firmware')
     metrics = read_json(args.metrics) if args.metrics else None
     old, new = version(LIVE), version(source)
     with tempfile.TemporaryDirectory(prefix='walle-stage-',dir=PROJECT/'model-backups') as temp:

@@ -1,5 +1,71 @@
 # C3_KEYWORD v1
 
+Configuración vigente: PIUU v1 (2026-10-31). Las secciones fechadas de octubre
+28 y anteriores conservan el historial de Wall-E v12.
+
+## PIUU v1 y standby por voz — 2026-10-31
+
+Se instaló el export `../piuu-cpp-mcu-v1-impulse-#1`, proyecto 1153075,
+versión de despliegue 1. Reemplaza Wall-E v12; la numeración pertenece a otro
+proyecto, no es un regreso a una versión anterior de Wall-E.
+
+Audio mono PCM16 de 16 kHz y ventanas de 16000 muestras. MFCC sin cambios
+respecto de v12: 13 coeficientes, frame 20 ms, stride 30 ms, 20 filtros,
+FFT 256, normalización 49 y 429 características. La migración conserva el
+detector, PCM original, ventanas y los cinco archivos de optimización del SDK.
+Se revisó el cambio de SDK (siete archivos modificados y cuatro nuevos):
+tracking visual, motor Nordic, TFLite completo, kernels de árboles y ports
+Alif/Open-CMSIS; la ruta MFCC original no cambió. Parche aplicado con fuzz=0.
+No usar la ruta incremental con este stride mayor que el frame.
+
+Reglas activas en `include/keyword_commands.h`:
+
+| Etiqueta exacta | Confianza mínima provisional | Evento |
+| --- | --- | --- |
+| `piuu` | 0.90 | WAKE_WORD (0x01) |
+| `piuu_stop` | 0.90 | STANDBY_WORD (0x07) |
+
+Cada umbral es independiente. `noise`, `unknown`, `linterna` y `luz` no emiten
+órdenes. `walle` ya no es una etiqueta del modelo. Al arrancar se comprueba
+que cada regla corresponda a una etiqueta exportada. Los umbrales iniciales
+son provisionales y deben ajustarse con positivos y negativos reales.
+
+C3_EARS retransmite 0x07 de forma opaca, sin cambios de firmware. Requiere CORE
+actualizado para interpretarlo: detiene el PCM hacia el servidor conservando
+sesión/contexto y KEYWORD; `piuu` reanuda cuando CORE está en escucha. STOP 0x03
+sigue cerrando la conversación. Los IDs 0x05/0x06 permanecen reservados para ojos.
+Una respuesta pendiente puede terminar y deja el micrófono en standby.
+La retención sigue limitada por el timeout de CORE (15 minutos por defecto).
+
+Se mantiene la protección contra eco: no hay detección durante reproducción
+ni durante la guarda posterior de 250 ms. No se agregaron retardos, prioridad
+entre etiquetas ni bloqueo de reactivación: cada ventana acepta únicamente la
+clase ganadora que alcance su umbral. Una ventana no emite ambas órdenes,
+pero ventanas diferentes pueden emitir WAKE y luego STANDBY; comprobarlo en placa.
+
+`tools/walle.py update --check` ahora verifica las seis etiquetas registradas
+en `tools/workflow/sdk-baseline.json`, además de hashes y parche. Sus resúmenes
+de métricas/logs siguen siendo históricos de Wall-E; no usarlos para evaluar
+la precisión de PIUU. No regenerar el dataset por el cambio de modelo.
+`reports/latest-update.json` identifica el export y el respaldo anterior.
+
+Validación de la versión publicada en una copia aislada: build
+`esp32-c3-uart`, reglas por keyword, VAD versionado, tres pruebas del workflow
+y `update --check` correctos.
+Comparación MFCC host: 40 ventanas, 429 características por ventana, idénticas
+bit a bit al SDK nuevo original (`reports/piuu-v1-mfcc-parity.json`). No se
+midió precisión del modelo nuevo ni latencia en placa. Ver `test/README` para
+repetir la comparación sin regenerar audio.
+
+Carga manual: actualizar primero CORE (`cyd` o `cyd2usb`, según placa), luego
+KEYWORD (`esp32-c3-uart`). No hace falta actualizar EARS. Confirmar en BOOT
+versión 1, seis etiquetas y las dos reglas con umbral 0.900.
+Ensayo pendiente: diez “piuu” y diez “piuu stop”, tanto desde reposo como durante
+escucha, separados tres segundos; luego ruido, otras palabras y reproducción.
+Guardar MODEL/MAP/EVENT de cada intento y observar queue/dropped/tiempos. Anotar
+si “piuu stop” genera WAKE previo o reactivación posterior. Compilar y probar
+lógica en host no mide reconocimiento acústico ni rendimiento en el ESP32.
+
 First modular version of the keyword-spotting firmware.
 
 ## Responsibilities
@@ -42,9 +108,8 @@ src/
 
 ## Important: keep the Edge Impulse export
 
-This package does **not** include the generated Edge Impulse SDK/model files.
-Keep the model directories already copied from `wall-e-inferencia`, including
-the files that provide:
+The generated Edge Impulse SDK/model lives in `lib/wall_e_model` (the folder
+name is retained for compatibility). It provides:
 
 ```cpp
 #include "edge-impulse-sdk/classifier/ei_run_classifier.h"
@@ -90,15 +155,17 @@ v1 sends events without payload.
 
 ## Model labels vs system events
 
-Only `event_mapper.cpp` knows model label names.
+The rules in `include/keyword_commands.h`, consumed by `event_mapper.cpp`,
+associate model labels with events and independent confidence thresholds.
 
 Current mapping:
 
 ```text
-"walle" >= 0.80 -> WAKE_WORD
+"piuu"      >= 0.90 -> WAKE_WORD
+"piuu_stop" >= 0.90 -> STANDBY_WORD
 ```
 
-When the model is retrained, edit the mapping table there. Do not put model
+When the model is retrained, edit the rules in `include/keyword_commands.h`. Do not put model
 labels into `ears_link` or `audio_detector`.
 
 ## Noise calibration
@@ -135,10 +202,12 @@ WAKE_WORD   = 1
 LIGHTS_WORD = 2
 STOP_WORD   = 3
 MUTE_WORD   = 4
+STANDBY_WORD = 7
 version     = 1
 ```
 
-These values **must match** `control_protocol.h` in C3_EARS. If your current
+Legacy IDs match `control_protocol.h` in C3_EARS. Standby 7 is relayed
+opaquely by EARS and must match `EarsProtocol::Event::Standby` in CORE. If your current
 EARS header uses different numeric values, change only `include/ears_protocol.h`
 before testing event transmission.
 

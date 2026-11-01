@@ -1,0 +1,9 @@
+{
+  "windows": 40,
+  "features_per_window": 429,
+  "bit_identical": true,
+  "max_abs_difference": 0.0,
+  "features_sha256": "c758bf807399157b57056efb1516e359b10ab1967b44070b94fd02823c4fc1a6",
+  "pcm_sha256": "2b25e61456f48d2fe24dc2ee2342a5d7aeadd8dd0789a80a130c73980a821015",
+  "input": "8 synthetic windows + 32 windows of historical real PCM; repeated calls exercise caches; not recognition accuracy"
+}

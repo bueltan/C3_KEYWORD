@@ -1,19 +1,48 @@
 {
-  "version": 12,
-  "previous_version": 11,
-  "backup": "/home/denis/Documents/Wall-e Project/wall-e-inferencia/model-backups/v11-antes-v12-20261004-142359-881393",
-  "sdk": "parche exacto verificado",
+  "project": "PIUU",
+  "project_id": 1153075,
+  "version": 1,
+  "previous_project": "wall-e",
+  "previous_version": 12,
+  "backup": "/home/denis/Documents/PlatformIO/Projects/C3_KEYWORD/model-backups/walle-v12-antes-piuu-v1-20261101T021521Z",
+  "export": "/home/denis/Documents/PlatformIO/Projects/piuu-cpp-mcu-v1-impulse-#1",
   "installed": true,
-  "export": "/home/denis/Downloads/wall-e-cpp-mcu-v12-impulse-#1",
+  "sdk": "7 changed + 4 added upstream files reviewed; 5 local optimization files byte-identical; fuzz=0 patch applied",
   "model_hashes": {
-    "tflite_learn_1124860_5_compiled.cpp": "023c205c8d5d1472496cff118ea6e0142cd3555aae749ecdd326fb67b8a9d449",
-    "tflite_learn_1124860_5_compiled.h": "0fc6033ec079603d9c76278d38a0edc2dde067e3e22d15fc35ed20639c4b0daa",
+    "tflite_learn_1153075_3_compiled.cpp": "095447b9b12a2a31a0b7db4456e587b7d29a003a84d627067160323572789e4f",
+    "tflite_learn_1153075_3_compiled.h": "35ca14c499c8b9ce417e93381fec01db0ed539d19c314cccd99a38dd3fad3ee7",
     "trained_model_ops_define.h": "d5fdddc7c25d9b733c23708d3717ac68fdcc2846dc845c868f4227c7c848a00d"
   },
-  "metrics": "/home/denis/Documents/Wall-e Project/wall-e-inferencia/reports/v12-metrics.json",
   "build": {
-    "environment": "esp32-c3-clips",
+    "environment": "esp32-c3-uart",
     "status": "SUCCESS",
-    "log": "/home/denis/Documents/Wall-e Project/wall-e-inferencia/reports/build-esp32-c3-clips.log"
+    "log": "/home/denis/Documents/PlatformIO/Projects/C3_KEYWORD/reports/build-piuu-v1-keyword.log",
+    "ram_bytes": 114060,
+    "flash_bytes": 384344
+  },
+  "hardware": "not uploaded or tested",
+  "core_build": {
+    "environments": [
+      "cyd",
+      "cyd2usb"
+    ],
+    "status": "SUCCESS",
+    "log": "/tmp/piuu-staged-core-build.log"
+  },
+  "validation": {
+    "mfcc_parity": "reports/piuu-v1-mfcc-parity.json",
+    "keyword_rules": "PASS; exact thresholds, unmapped labels, piuu/wake and piuu_stop/standby",
+    "vad": "PASS adaptive and fixed host modes",
+    "workflow": "PASS 3 historical summary tests and current export update --check",
+    "core": "PASS services diagnostics 0/1, ears session diagnostics 0/1, real EARS/CORE protocol including standby 0x07",
+    "full_core_suite": "FAILED: Golden pixel mismatch in scene 0 (test_v2_raster, visual files unchanged in this migration); runner stopped there. Relevant conversation/protocol tests executed separately."
+  },
+  "publication_validation": {
+    "scope": "staged Git snapshots; excludes pre-existing VAD/UI/power changes",
+    "keyword_build": "SUCCESS esp32-c3-uart",
+    "core_build": "SUCCESS cyd + cyd2usb",
+    "core_host_suite": "PASS full native test/run_host_tests.sh; optional external backend checks not requested",
+    "keyword_host": "PASS mapper thresholds, versioned VAD, 3 workflow tests and update --check",
+    "whitespace": "Authored files pass git diff --check; upstream generated export whitespace retained byte-for-byte"
   }
 }

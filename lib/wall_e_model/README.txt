@@ -1,7 +1,7 @@
 
-# Edge Impulse library for wall-e
+# Edge Impulse library for PIUU
 
-This is a C++ library that lets you run the impulse for "wall-e" (https://studio.edgeimpulse.com/studio/1124860) on any device. It consists of the Edge Impulse inferencing SDK - with implementations of both processing and learning blocks - and your model. You will need to include this library in your project to run your impulse locally.
+This is a C++ library that lets you run the impulse for "PIUU" (https://studio.edgeimpulse.com/studio/1153075) on any device. It consists of the Edge Impulse inferencing SDK - with implementations of both processing and learning blocks - and your model. You will need to include this library in your project to run your impulse locally.
 
 ## Getting Started
 

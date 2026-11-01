@@ -3,6 +3,7 @@
 #include <cstring>
 
 #include "keyword_config.h"
+#include "keyword_commands.h"
 #include "edge-impulse-sdk/classifier/ei_run_classifier.h"
 
 namespace
@@ -48,6 +49,19 @@ bool keywordModelBegin()
         unsigned(EI_CLASSIFIER_LABEL_COUNT),
         unsigned(KeywordConfig::MODEL_WINDOW_SAMPLES),
         unsigned(KeywordConfig::SAMPLE_RATE_HZ));
+
+    for (const auto &rule : KeywordCommands::RULES)
+    {
+        bool found = false;
+        for (size_t i = 0; i < EI_CLASSIFIER_LABEL_COUNT; ++i)
+            if (strcmp(rule.label, ei_classifier_inferencing_categories[i]) == 0)
+                found = true;
+        if (!found)
+        {
+            Serial.printf("[MODEL] ERROR missing configured label=%s\n", rule.label);
+            return false;
+        }
+    }
 
     return true;
 }

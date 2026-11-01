@@ -16,3 +16,18 @@ Fixed VAD regression (from Projects):
 
 Checks silence, exact onset threshold, minimum onset, hysteresis, quiet duration,
 window completion, startup spikes and threshold preservation after stream reset.
+
+Per-keyword confidence regression (from Projects):
+  g++ -std=c++11 -Wall -Wextra -Werror -I C3_KEYWORD/test/event_mapper -I C3_KEYWORD/include C3_KEYWORD/test/event_mapper/test_thresholds.cpp C3_KEYWORD/src/event_mapper.cpp -o /tmp/keyword-thresholds
+  /tmp/keyword-thresholds
+
+Checks each configured rule at its exact threshold, just below it, at full
+confidence and with failed inference; rejects noise and unmapped labels.
+
+PIUU v1 pristine/optimized MFCC parity (from C3_KEYWORD; g++ required):
+  python3 -B tests/verify_mfcc_export.py '../piuu-cpp-mcu-v1-impulse-#1' --audio model-backups/audio-antes-oct4/real_audio.pcm --output reports/piuu-v1-mfcc-parity.json
+
+Compares 40 windows (8 synthetic + 32 existing historical PCM windows), including
+repeated extraction to exercise caches. Uses pristine exported MFCC parameters;
+fails for nonfinite features or maximum absolute difference >= 1e-5.
+This checks features on the host, not acoustic accuracy or ESP32 latency.

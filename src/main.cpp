@@ -35,6 +35,8 @@ void setup()
         return;
     }
 
+    eventMapperPrintConfig();
+
     if (!earsLinkBegin())
     {
         Serial.println("[BOOT] ERROR inicializando EARS link");
@@ -82,7 +84,7 @@ void loop()
     if (!mapped.emit)
     {
         Serial.printf(
-            "[MAP] label=%s confidence=%.5f < threshold=%.2f\n",
+            "[MAP] label=%s confidence=%.5f < threshold=%.3f\n",
             result.label,
             result.confidence,
             mapped.threshold);
@@ -93,10 +95,11 @@ void loop()
     const bool sent = earsLinkSendEvent(mapped.event);
 
     Serial.printf(
-        "[EVENT] %s | label=%s | confidence=%.5f | tx=%s | queue=%u | heap=%u\n",
+        "[EVENT] %s | label=%s | confidence=%.5f | threshold=%.3f | tx=%s | queue=%u | heap=%u\n",
         eventMapperEventName(mapped.event),
         result.label,
         result.confidence,
+        mapped.threshold,
         sent ? "OK" : "ERROR",
         unsigned(earsLinkQueueDepth()),
         ESP.getFreeHeap());

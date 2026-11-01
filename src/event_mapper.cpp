@@ -2,22 +2,15 @@
 
 #include <cstring>
 
-namespace
-{
-    struct Mapping
-    {
-        const char *label;
-        EarsProtocol::AudioEvent event;
-        float threshold;
-    };
+#include "keyword_commands.h"
 
-    // This is intentionally the only place that knows the current model's
-    // semantic labels. When the model is retrained, edit this table without
-    // changing UART, VAD, or EARS.
-    static constexpr Mapping mappings[] =
+void eventMapperPrintConfig()
+{
+    for (const auto &entry : KeywordCommands::RULES)
     {
-        {"walle", EarsProtocol::AudioEvent::WAKE_WORD, 0.80f},
-    };
+        Serial.printf("[MAP] config label=%s event=%s threshold=%.3f\n",
+            entry.label, eventMapperEventName(entry.event), entry.minConfidence);
+    }
 }
 
 EventMappingResult eventMapperMap(const KeywordResult &result)
@@ -31,15 +24,15 @@ EventMappingResult eventMapperMap(const KeywordResult &result)
     if (!result.ok || result.label == nullptr)
         return mapped;
 
-    for (const Mapping &entry : mappings)
+    for (const auto &entry : KeywordCommands::RULES)
     {
         if (strcmp(result.label, entry.label) != 0)
             continue;
 
         mapped.knownLabel = true;
-        mapped.threshold = entry.threshold;
+        mapped.threshold = entry.minConfidence;
 
-        if (result.confidence >= entry.threshold)
+        if (result.confidence >= entry.minConfidence)
         {
             mapped.emit = true;
             mapped.event = entry.event;
@@ -63,6 +56,9 @@ const char *eventMapperEventName(EarsProtocol::AudioEvent event)
 
         case EarsProtocol::AudioEvent::STOP_WORD:
             return "STOP_WORD";
+
+        case EarsProtocol::AudioEvent::STANDBY_WORD:
+            return "STANDBY_WORD";
 
         case EarsProtocol::AudioEvent::MUTE_WORD:
             return "MUTE_WORD";

@@ -30,15 +30,17 @@ namespace EarsProtocol
     static constexpr uint8_t EVENT_MAGIC[4] = {'E', 'V', 'T', '!'};
 
     // IMPORTANT:
-    // These values must stay identical to control_protocol.h in C3_EARS.
-    // This is the mapping used by the current EARS design.
+    // Legacy IDs mirror control_protocol.h in C3_EARS. Standby 0x07 is
+    // relayed opaquely by EARS and must match EarsProtocol::Event in CORE.
     enum class AudioEvent : uint8_t
     {
         NONE        = 0x00,
         WAKE_WORD   = 0x01,
         LIGHTS_WORD = 0x02,
         STOP_WORD   = 0x03,
-        MUTE_WORD   = 0x04
+        MUTE_WORD   = 0x04,
+        // 0x05/0x06 are reserved for CORE's existing eyes events.
+        STANDBY_WORD = 0x07
     };
     static constexpr uint8_t EVENT_PROTOCOL_VERSION = 1;
     static constexpr size_t EVENT_MAX_PAYLOAD_BYTES = 32;
